@@ -1,0 +1,11 @@
+{
+  "MIN_HEIGHT" : 30,
+  "MAX_HEIGHT" : 50,
+
+  "MIN_LENGTH" : 40,
+  "MAX_LENGTH" : 60,
+
+  "MIN_CAPACITY" : 1200,
+  "MAX_CAPACITY" : 2880
+}
+
