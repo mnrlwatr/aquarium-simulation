@@ -1,4 +1,4 @@
-package org.fp.service.creation.aquarium;
+package org.fp.service.factory.aquarium;
 
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;

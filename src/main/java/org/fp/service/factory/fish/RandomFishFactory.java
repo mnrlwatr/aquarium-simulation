@@ -1,4 +1,4 @@
-package org.fp.service.creation.fish;
+package org.fp.service.factory.fish;
 
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
@@ -11,10 +11,10 @@ import org.fp.service.util.RandomPosition;
 import java.util.concurrent.ThreadLocalRandom;
 
 @FieldDefaults(level = AccessLevel.PRIVATE,makeFinal = true)
-public class FishFactory {
+public class RandomFishFactory implements FishFactory {
     ThreadLocalRandom random = ThreadLocalRandom.current();
-
-    public synchronized AbstractFish create(Class<?> clazz){
+    @Override
+    public synchronized AbstractFish produce(Class<?> clazz){
         Position randomPosition = RandomPosition.getPosition();
 
         // Пол каждой новорожденной рыбы определяется методом Random

@@ -5,13 +5,13 @@ import lombok.experimental.FieldDefaults;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class FishStatistics {
+public class Statistics {
     // если в аквариуме будет очень много активных рыб, то AtomicInteger лучше заменить на LongAdder (p.s sum() дорогостоящий операция)
     AtomicInteger totalBorn;
     AtomicInteger totalDied;
     AtomicInteger totalMovements;
 
-    public FishStatistics() {
+    public Statistics() {
         totalBorn = new AtomicInteger(0);
         totalDied = new AtomicInteger(0);
         totalMovements = new AtomicInteger(0);

@@ -1,21 +1,21 @@
-package org.fp.service;
+package org.fp.service.util;
 
 import lombok.AccessLevel;
+import lombok.Setter;
 import lombok.experimental.FieldDefaults;
-import org.fp.ApplicationContext;
 import org.fp.exception.AquariumIsNotWorkingException;
 import org.fp.model.fish.AbstractFish;
-import org.fp.service.creation.fish.FishFactory;
+import org.fp.service.factory.fish.FishFactory;
 import org.fp.service.managment.AquariumController;
-import org.fp.service.util.RandomPosition;
 
 import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public final class AquariumFill {
-    static ThreadLocalRandom random = ThreadLocalRandom.current();
-    static FishFactory fishFactory = (FishFactory) ApplicationContext.getDependency("FishFactory1");
+    static final ThreadLocalRandom random = ThreadLocalRandom.current();
+    @Setter
+    static FishFactory fishFactory;
 
     private AquariumFill() {
     }
@@ -27,6 +27,7 @@ public final class AquariumFill {
      * @return Общее количество добавленных рыб
      */
     public static int fillWithFishes(AquariumController aquariumController, Class<?> clazz) throws AquariumIsNotWorkingException {
+        checkFishFactoryInitialization();
         // в аквариуме всегда будет минимум 200 рыб и максимум (aquarium.сapacity - 200)
         // чтобы аквариум быстро не выключалось (из-за опустошения или из-за переполнения)
         int randomFishesAmount = random.nextInt(200, (aquariumController.getAquariumCapacity() - 201));
@@ -53,11 +54,18 @@ public final class AquariumFill {
     }
 
     public static AbstractFish addOneFish(AquariumController aquariumController, Class<?> clazz) throws AquariumIsNotWorkingException {
-        AbstractFish newBornFish = fishFactory.create(clazz);
+        checkFishFactoryInitialization();
+        AbstractFish newBornFish = fishFactory.produce(clazz);
         while (!aquariumController.placeFish(newBornFish)) {
             newBornFish.setPosition(RandomPosition.getPosition());
         }
         return newBornFish;
+    }
+
+    private static void checkFishFactoryInitialization() {
+        if (fishFactory == null) {
+            throw new IllegalStateException("FishFactory is not initialized");
+        }
     }
 
 }

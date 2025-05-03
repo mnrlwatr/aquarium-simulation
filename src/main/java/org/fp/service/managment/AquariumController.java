@@ -37,8 +37,9 @@ public class AquariumController {
     }
 
     /**
-     * @return null if fish moved to the positionToMove, if the positionToMove is not free then returns the fish which is holding that position.
-     * @throws AquariumIsNotWorkingException if there was attempt to move the fish when Aquarium is stopped
+     * @return вернет null если positionToMove свободна, если позиция занята то вернет объект AbstractFish который занимает positionToMove
+     * null ещё означает что в мапу Aquarium.fishesMap была добавлена fish с ключом positionToMove
+     * @throws AquariumIsNotWorkingException если метод был вызван когда аквариум был остановлен или ещё не начал работать.
      */
     public AbstractFish moveIfPositionFree(Position positionToMove, AbstractFish fish) throws AquariumIsNotWorkingException {
         if (isAquariumWorking()) {
@@ -90,6 +91,8 @@ public class AquariumController {
                 while (!(isAquariumFull()) && !(isAquariumEmpty())) {
                 }
                 working = false;
+                System.out.println("Aquarium stopped. It is " + (isAquariumFull() ? "Full" : "Empty") + " !");
+
             });
             t1.setDaemon(true);
             t1.start();

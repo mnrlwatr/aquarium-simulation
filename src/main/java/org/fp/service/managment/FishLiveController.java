@@ -2,19 +2,19 @@ package org.fp.service.managment;
 
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
-import org.fp.ApplicationContext;
+import org.fp.container.ApplicationContext;
 import org.fp.exception.AquariumIsNotWorkingException;
 import org.fp.model.Position;
 import org.fp.model.fish.AbstractFish;
-import org.fp.service.AquariumFill;
-import org.fp.service.statistics.FishStatistics;
+import org.fp.service.util.AquariumFill;
+import org.fp.service.statistics.Statistics;
 
 import java.util.concurrent.TimeUnit;
 
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class FishLiveController implements Runnable {
     AquariumController aquariumController = (AquariumController) ApplicationContext.getDependency("aquariumController1");
-    FishStatistics fishStatistics = (FishStatistics) ApplicationContext.getDependency("FishLifeStatistics1");
+    Statistics statistics = (Statistics) ApplicationContext.getDependency("Statistics1");
     AbstractFish abstractFish;
     Movement movement; // композиция (двигаться можешь только если есть жизнь)
 
@@ -42,7 +42,7 @@ public class FishLiveController implements Runnable {
                 }
             } else {
                 aquariumController.releasePosition(abstractFish.getPosition());
-                fishStatistics.incrementTotalDied();
+                statistics.incrementTotalDied();
                 System.out.println(abstractFish + " is Dead"); // Отчет о каждом процессе должен отображаться в консоли.
                 break;
             }
@@ -57,7 +57,7 @@ public class FishLiveController implements Runnable {
             if (f2 == null) {
                 aquariumController.releasePosition(abstractFish.getPosition());
                 abstractFish.setPosition(positionToMove);
-                fishStatistics.incrementTotalMovements();
+                statistics.incrementTotalMovements();
             } else {
                 bornFish(abstractFish,f2);
             }
@@ -69,7 +69,7 @@ public class FishLiveController implements Runnable {
             if(f1.getClass().equals(f2.getClass()) && !f1.getGender().equals(f2.getGender())) {
                 AbstractFish newBornFish = AquariumFill.addOneFish(aquariumController,f1.getClass());
                 newBornFish.startLiving();
-                fishStatistics.incrementTotalBorn();
+                statistics.incrementTotalBorn();
                 System.out.println("A new fish was born = " + newBornFish); // Отчет о каждом процессе должен отображаться в консоли.
             }
 

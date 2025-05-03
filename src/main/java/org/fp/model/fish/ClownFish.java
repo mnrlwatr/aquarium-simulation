@@ -16,14 +16,13 @@ public class ClownFish extends AbstractFish {
 
     @Override
     public Position calculateRandomPositionToMove(int aquariumLength, int aquariumHeight) {
-        Position p = getPosition();
         while (true) {
             Position direction = RandomDirection.getDirection();
-            int newX = p.getX() + direction.getX();
-            int newY = p.getY() + direction.getY();
+            int newX = getPosition().getX() + direction.getX();
+            int newY = getPosition().getY() + direction.getY();
             // новое место для перемещения не должно выходит за рамки аквариума
-            boolean x = (newX >= 0) && (newX <= aquariumLength);
-            boolean y = (newY >= 0) && (newY <= aquariumHeight);
+            boolean x = (newX > 0) && (newX < aquariumLength);
+            boolean y = (newY > 0) && (newY < aquariumHeight);
             if (x && y) {
                 return new Position(newX, newY);
             }

@@ -1,4 +1,4 @@
-package org.fp;
+package org.fp.container;
 
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
