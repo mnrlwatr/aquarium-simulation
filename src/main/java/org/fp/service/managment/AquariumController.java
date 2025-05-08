@@ -22,7 +22,7 @@ public class AquariumController {
      *  так можно ускорить поиск нужной позиции и определять является ли позиция свободным или занятым,
      *  в начале инициализации аквариума нужно будет заполнить TreeMap<K, V> (может быть трудозатратной операцией если размер аквариума большой)
      *  K это сгенерированный id, а V - объект Position.
-     *  Алгоритм для генерации id = (Position.y * Aquarium.height) + Position.x
+     *  Алгоритм для генерации id = (Position.y * Aquarium.length) + Position.x
      */
     ConcurrentMap<Position, AbstractFish> fishesMap;
 
