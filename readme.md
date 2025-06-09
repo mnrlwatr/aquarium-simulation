@@ -1,2 +1,2 @@
 
-![](images/description.png)
+![](images/task-description.png)
