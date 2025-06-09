@@ -56,7 +56,7 @@ public final class AquariumFill {
     public static AbstractFish addOneFish(AquariumController aquariumController, Class<?> clazz) throws AquariumIsNotWorkingException {
         checkFishFactoryInitialization();
         AbstractFish newBornFish = fishFactory.produce(clazz);
-        while (!aquariumController.placeFish(newBornFish)) {
+        while (aquariumController.placeFish(newBornFish)!=null) {
             newBornFish.setPosition(RandomPosition.getPosition());
         }
         return newBornFish;

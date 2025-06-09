@@ -16,7 +16,6 @@ public class AquariumController {
     @NonFinal
     volatile boolean working; // значение меняет только один тред
 
-
     /*
      *  Есть идея: использовать TreeMap вместо ConcurrentHashMap,
      *  так можно ускорить поиск нужной позиции и определять является ли позиция свободным или занятым,
@@ -32,26 +31,9 @@ public class AquariumController {
         working = true;
     }
 
-    public boolean isPositionFree(Position position) {
-        return !fishesMap.containsKey(position);
-    }
-
-    /**
-     * @return вернет null если positionToMove свободна, если позиция занята то вернет объект AbstractFish который занимает positionToMove
-     * null ещё означает что в мапу Aquarium.fishesMap была добавлена fish с ключом positionToMove
-     * @throws AquariumIsNotWorkingException если метод был вызван когда аквариум был остановлен или ещё не начал работать.
-     */
-    public AbstractFish moveIfPositionFree(Position positionToMove, AbstractFish fish) throws AquariumIsNotWorkingException {
+    public AbstractFish placeFish(AbstractFish fish) throws AquariumIsNotWorkingException {
         if (isAquariumWorking()) {
-            return fishesMap.putIfAbsent(positionToMove, fish);
-        } else {
-            throw new AquariumIsNotWorkingException();
-        }
-    }
-
-    public boolean placeFish(AbstractFish fish) throws AquariumIsNotWorkingException {
-        if (isAquariumWorking()) {
-            return fishesMap.putIfAbsent(fish.getPosition(), fish) == null;
+            return fishesMap.putIfAbsent(fish.getPosition(), fish);
         } else {
             throw new AquariumIsNotWorkingException();
         }

@@ -53,12 +53,14 @@ public class FishLiveController implements Runnable {
 
         public void randomMove() throws AquariumIsNotWorkingException {
             Position positionToMove = abstractFish.calculateRandomPositionToMove(aquariumController.getAquariumLength(), aquariumController.getAquariumHeight());
-            AbstractFish f2 = aquariumController.moveIfPositionFree(positionToMove, abstractFish);
+            Position previosPosition = abstractFish.getPosition();
+            abstractFish.setPosition(positionToMove);
+            AbstractFish f2 = aquariumController.placeFish(abstractFish);
             if (f2 == null) {
-                aquariumController.releasePosition(abstractFish.getPosition());
-                abstractFish.setPosition(positionToMove);
+                aquariumController.releasePosition(previosPosition);
                 statistics.incrementTotalMovements();
             } else {
+                abstractFish.setPosition(previosPosition);
                 bornFish(abstractFish,f2);
             }
         }
