@@ -32,7 +32,10 @@ public class AquariumController {
     }
 
     public AbstractFish placeFish(AbstractFish fish) throws AquariumIsNotWorkingException {
-        if (isAquariumWorking()) {
+        if (fish.getPosition()==null){ // avoiding putting a null key to the map
+            throw new IllegalArgumentException("Position is null");
+        }
+        else if (isAquariumWorking()) {
             return fishesMap.putIfAbsent(fish.getPosition(), fish);
         } else {
             throw new AquariumIsNotWorkingException();
