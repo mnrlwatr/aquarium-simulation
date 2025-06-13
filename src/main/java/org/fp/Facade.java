@@ -15,8 +15,8 @@ public class Facade {
         Configuration.configure();
         System.out.println("Aquarium created = "+ ApplicationContext.getDependency("aquarium1"));
         System.out.println("*********************************************************************************************");
+
         AquariumController aquariumController = (AquariumController) ApplicationContext.getDependency("aquariumController1");
-        AquariumFill.setFishFactory((FishFactory) ApplicationContext.getDependency("RandomFishFactory1"));
         // На момент написания в аквариуме было N самцов и M самок.
         // Значения N и M также определяются методом Random.
         try {

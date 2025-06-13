@@ -2,24 +2,28 @@ package org.fp.service.factory.aquarium;
 
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
+import org.fp.constant.AquariumParameters;
 import org.fp.model.Aquarium;
 import java.util.concurrent.ThreadLocalRandom;
-import static org.fp.constant.Constants.*;
 
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public final class RandomAquariumFactory {
-    static ThreadLocalRandom random=ThreadLocalRandom.current();
-    private RandomAquariumFactory() {
+public class RandomAquariumFactory implements AquariumFactory {
+    ThreadLocalRandom random = ThreadLocalRandom.current();
+    AquariumParameters parameters;
+
+    public RandomAquariumFactory(AquariumParameters parameters) {
+        this.parameters = parameters;
     }
 
     /**
      * @return new Aquarium instance with random height,length and capacity where (height*length)>capacity is always true
      */
-    public static Aquarium create() {
+    @Override
+    public Aquarium create() {
         while (true) {
-            int height = random.nextInt(RECTANGULAR_AQUARIUM_MIN_HEIGHT, RECTANGULAR_AQUARIUM_MAX_HEIGHT);
-            int length = random.nextInt(RECTANGULAR_AQUARIUM_MIN_LENGTH, RECTANGULAR_AQUARIUM_MAX_LENGTH);
-            int capacity = random.nextInt(RECTANGULAR_AQUARIUM_MIN_CAPACITY, RECTANGULAR_AQUARIUM_MAX_CAPACITY);
+            int height = random.nextInt(parameters.getMIN_HEIGHT(), parameters.getMAX_HEIGHT()+1);
+            int length = random.nextInt(parameters.getMIN_LENGTH(), parameters.getMAX_LENGTH()+1);
+            int capacity = random.nextInt(parameters.getMIN_CAPACITY(), parameters.getMAX_CAPACITY()+1);
 
             // height*length это общее количество мест (координатных точек x,y) в которых могут находиться рыбы
             // на одной точке (x,y) может находиться только одна рыба
