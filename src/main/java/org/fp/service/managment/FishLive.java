@@ -1,6 +1,7 @@
 package org.fp.service.managment;
 
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.experimental.FieldDefaults;
 import org.fp.container.ApplicationContext;
 import org.fp.exception.AquariumIsNotWorkingException;
@@ -21,7 +22,7 @@ public class FishLive implements Runnable {
 
     public FishLive(AbstractFish abstractFish) {
         this.abstractFish = abstractFish;
-        movement = new Movement();
+        movement = new Movement(aquariumController.getAquariumLength(), aquariumController.getAquariumHeight());
         mating = new Mating((FishFactory) ApplicationContext.getDependency("FishFactory"));
         new Thread(this).start(); // Каждая рыба должна быть в отдельном потоке.(Thread)
     }
@@ -51,9 +52,19 @@ public class FishLive implements Runnable {
         }
     }
 
+    @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+    @Getter
     private class Movement {
+        int aquariumLength;
+        int aquariumHeight;
+
+        public Movement(int aquariumLength, int aquariumHeight) {
+            this.aquariumLength = aquariumLength;
+            this.aquariumHeight = aquariumHeight;
+        }
+
         public void randomMove() throws AquariumIsNotWorkingException {
-            Position positionToMove = abstractFish.calculateRandomPositionToMove(aquariumController.getAquariumLength(), aquariumController.getAquariumHeight());
+            Position positionToMove = abstractFish.calculateRandomPositionToMove(getAquariumLength(), getAquariumHeight());
             Position previosPosition = abstractFish.getPosition();
             abstractFish.setPosition(positionToMove);
             AbstractFish f2 = aquariumController.placeFish(abstractFish);
@@ -67,8 +78,10 @@ public class FishLive implements Runnable {
         }
     }
 
+    @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
     private class Mating {
-        final FishFactory fishFactory;
+        @Getter
+        FishFactory fishFactory;
 
         private Mating(FishFactory fishFactory) {
             this.fishFactory = fishFactory;
@@ -77,8 +90,8 @@ public class FishLive implements Runnable {
         public boolean tryToMate(AbstractFish f1, AbstractFish f2) throws AquariumIsNotWorkingException {
             //Если самцы и самки встречаются, они должны размножаться.
             if (f1.getClass().equals(f2.getClass()) && !f1.getGender().equals(f2.getGender())) {
-                AbstractFish newBornFish = fishFactory.produce(f1.getClass());
-                while (aquariumController.placeFish(newBornFish)!=null) {
+                AbstractFish newBornFish = getFishFactory().produce(f1.getClass());
+                while (aquariumController.placeFish(newBornFish) != null) {
                     newBornFish.setPosition(RandomPosition.getPosition());
                 }
                 System.out.println("A new fish was born = " + newBornFish);
