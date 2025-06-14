@@ -7,6 +7,7 @@ import org.fp.exception.AquariumIsNotWorkingException;
 import org.fp.model.Position;
 import org.fp.model.Aquarium;
 import org.fp.model.fish.AbstractFish;
+import org.fp.service.util.RandomPosition;
 
 import java.util.concurrent.ConcurrentMap;
 
@@ -32,7 +33,7 @@ public class AquariumController {
     }
 
     public AbstractFish placeFish(AbstractFish fish) throws AquariumIsNotWorkingException {
-        if (fish.getPosition()==null){ // avoiding putting a null key to the map
+        if (fish.getPosition()==null){ // protecting from putting a null key to the map
             throw new IllegalArgumentException("Position is null");
         }
         else if (isAquariumWorking()) {

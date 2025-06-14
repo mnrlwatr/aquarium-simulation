@@ -4,7 +4,7 @@ import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import org.fp.model.Position;
 import org.fp.model.fish.enums.Gender;
-import org.fp.service.managment.FishLiveController;
+import org.fp.service.managment.FishLive;
 import org.fp.service.util.RandomDirection;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -37,6 +37,6 @@ public class ClownFish extends AbstractFish {
 
     @Override
     public void startLiving() {
-        new FishLiveController(this);
+        new FishLive(this);
     }
 }

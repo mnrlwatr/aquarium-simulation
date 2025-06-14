@@ -6,21 +6,23 @@ import org.fp.container.ApplicationContext;
 import org.fp.exception.AquariumIsNotWorkingException;
 import org.fp.model.Position;
 import org.fp.model.fish.AbstractFish;
-import org.fp.service.util.AquariumFill;
+import org.fp.service.factory.fish.FishFactory;
 import org.fp.service.statistics.Statistics;
+import org.fp.service.util.RandomPosition;
 
 import java.util.concurrent.TimeUnit;
 
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class FishLiveController implements Runnable {
+public class FishLive implements Runnable {
     AquariumController aquariumController = (AquariumController) ApplicationContext.getDependency("aquariumController1");
-    Statistics statistics = (Statistics) ApplicationContext.getDependency("Statistics1");
     AbstractFish abstractFish;
-    Movement movement; // композиция (двигаться можешь только если есть жизнь)
+    Mating mating;
+    Movement movement;
 
-    public FishLiveController(AbstractFish abstractFish) {
+    public FishLive(AbstractFish abstractFish) {
         this.abstractFish = abstractFish;
         movement = new Movement();
+        mating = new Mating((FishFactory) ApplicationContext.getDependency("FishFactory"));
         new Thread(this).start(); // Каждая рыба должна быть в отдельном потоке.(Thread)
     }
 
@@ -42,7 +44,7 @@ public class FishLiveController implements Runnable {
                 }
             } else {
                 aquariumController.releasePosition(abstractFish.getPosition());
-                statistics.incrementTotalDied();
+                Statistics.incrementTotalDied();
                 System.out.println(abstractFish + " is Dead"); // Отчет о каждом процессе должен отображаться в консоли.
                 break;
             }
@@ -50,7 +52,6 @@ public class FishLiveController implements Runnable {
     }
 
     private class Movement {
-
         public void randomMove() throws AquariumIsNotWorkingException {
             Position positionToMove = abstractFish.calculateRandomPositionToMove(aquariumController.getAquariumLength(), aquariumController.getAquariumHeight());
             Position previosPosition = abstractFish.getPosition();
@@ -58,25 +59,33 @@ public class FishLiveController implements Runnable {
             AbstractFish f2 = aquariumController.placeFish(abstractFish);
             if (f2 == null) {
                 aquariumController.releasePosition(previosPosition);
-                statistics.incrementTotalMovements();
+                Statistics.incrementTotalMovements();
             } else {
                 abstractFish.setPosition(previosPosition);
-                bornFish(abstractFish,f2);
+                mating.tryToMate(abstractFish, f2);
             }
         }
+    }
 
-        // Вынесу в отдельный класс
-        private void bornFish(AbstractFish f1,AbstractFish f2) throws AquariumIsNotWorkingException {
+    private class Mating {
+        final FishFactory fishFactory;
+
+        private Mating(FishFactory fishFactory) {
+            this.fishFactory = fishFactory;
+        }
+
+        public boolean tryToMate(AbstractFish f1, AbstractFish f2) throws AquariumIsNotWorkingException {
             //Если самцы и самки встречаются, они должны размножаться.
-            if(f1.getClass().equals(f2.getClass()) && !f1.getGender().equals(f2.getGender())) {
-                AbstractFish newBornFish = AquariumFill.addOneFish(aquariumController,f1.getClass());
-                newBornFish.startLiving();
-                statistics.incrementTotalBorn();
-                System.out.println("A new fish was born = " + newBornFish); // Отчет о каждом процессе должен отображаться в консоли.
+            if (f1.getClass().equals(f2.getClass()) && !f1.getGender().equals(f2.getGender())) {
+                AbstractFish newBornFish = fishFactory.produce(f1.getClass());
+                while (aquariumController.placeFish(newBornFish)!=null) {
+                    newBornFish.setPosition(RandomPosition.getPosition());
+                }
+                System.out.println("A new fish was born = " + newBornFish);
+                Statistics.incrementTotalBorn();// Отчет о каждом процессе должен отображаться в консоли.
+                return true;
             }
-
-
+            return false;
         }
-
     }
 }
